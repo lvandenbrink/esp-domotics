@@ -49,14 +49,23 @@ cd nodemcu-firmware
 docker run --rm -ti -v `pwd`:/opt/nodemcu-firmware marcelstoer/nodemcu-build build
 ```
 
-install flash tooling
+
+### Setup environment
+Python environment:
 ```
-sudo pip3 install esptool
+python3 -m venv .env
+source .env/bin/activate
 ```
 
+install flash tooling
+```
+pip3 install esptool
+```
+
+### Flash
 flash firmware
 ```
-sudo python3 -m esptool --trace --port /dev/ttyUSB0 --baud 115200 write_flash 0x00000 nodemcu-firmware/bin/nodemcu_float_release_20210105-1953.bin
+python3 -m esptool --trace --port /dev/ttyUSB0 --baud 115200 write_flash 0x00000 nodemcu-firmware/bin/nodemcu_float_release_20210105-1953.bin
 ```
 
 ### Problems
@@ -106,7 +115,51 @@ node.restart()
 scripts that use wifi import a credentials.lue. This contains the SSID and password
 ## Secrets in lua scripts
 ```
--- Network Credentials
-ssid=<insert SSID>
-pass=<insert password>
+-- Network Credentials in credentials.lua
+SSID=<insert ssid>
+PASSWORD=<insert password>
+```
+
+
+# ESP32 Nodemcu
+
+make firmware at https://nodemcu-build.com/ with documentation: https://nodemcu.readthedocs.io/en/dev-esp32-idf3-final/modules/wifi/
+
+``` 
+git clone --branch dev-esp32 --recurse-submodules https://github.com/nodemcu/nodemcu-firmware.git nodemcu-firmware-esp32
+```
+
+```
+./install.sh
+
+make menuconfig
+make flash
+```
+
+
+```
+nvm install 23
+```
+
+User node version 23 due to compatiablity issues of nodemcu-tool
+```
+nvm use 23
+npm install nodemcu-tool -g
+
+nodemcu-tool upload --port=/dev/ttyUSB0 credentials.lua
+nodemcu-tool upload --port=/dev/ttyUSB0 esp32-firebeetle/init.lua
+
+```
+
+When `file.open` is not working, it is possible that with `;` it is. Then the following code would write the init.
+
+```
+do
+    local file = io.open("init.lua", "w")
+    file:write[[
+        print("Test")
+    ]]
+    file:close()
+end
+node.restart()
 ```
