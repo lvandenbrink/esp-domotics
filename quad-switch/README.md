@@ -1,6 +1,6 @@
-# ESP32-C6 Button Test
+# ESP32-C6 Quad switch
 
-4 buttons (GPIO 0–3) paired with 4 LEDs (GPIO 4–7). Press a button to light its LED.
+4 buttons (GPIO 0–3) paired with 4 LEDs (GPIO 4–7). Press a button to light its LED. Send a message to MQTT when a button is pressed.
 
 ## Prerequisites
 
