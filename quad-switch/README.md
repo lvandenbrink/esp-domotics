@@ -80,3 +80,66 @@ Press `Ctrl+X` to exit. You should see button press/release events printed as yo
 |              |                | GPIO7       | GPIO8       |             |              |
 
 Buttons are wired pull-up: signal leg to GPIO, other leg to GND.
+
+
+## Home Assitant config
+An automation to listen to the buttons and control actions. 
+```
+alias: ESP Quad Switch Controller
+description: Handles button presses from the ESP Quad Switch
+triggers:
+  - topic: homeassistant/device/quad-switch/3
+    payload: pressed
+    id: toggle_button_3
+    trigger: mqtt
+  - topic: homeassistant/device/quad-switch/2
+    payload: pressed
+    id: toggle_button_2
+    trigger: mqtt
+  - topic: homeassistant/device/quad-switch/1
+    payload: pressed
+    id: toggle_button_1
+    trigger: mqtt
+  - topic: homeassistant/device/quad-switch/0
+    payload: pressed
+    id: toggle_button_0
+    trigger: mqtt
+conditions: []
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: toggle_button_3
+        sequence:
+          - type: toggle
+            device_id: 15a362b3bdfd15ab387ec4f4b4a9f47b
+            entity_id: d0230fba1fc1cfb2146270b9fc346723
+            domain: switch
+      - conditions:
+          - condition: trigger
+            id: toggle_button_2
+        sequence:
+          - type: toggle
+            device_id: 800780b96d6ece74e39f398b78fd6335
+            entity_id: ee1aaaac27d35d882b76348b3ce6e039
+            domain: switch
+      - conditions:
+          - condition: trigger
+            id: toggle_button_1
+        sequence:
+          - type: toggle
+            device_id: 80a840eaf514ca43ece38f2292c43de3
+            entity_id: dc76aed99b1f74470eab38b03a3e5764
+            domain: switch
+      - conditions:
+          - condition: trigger
+            id: toggle_button_0
+        sequence:
+          - action: automation.trigger
+            metadata: {}
+            target:
+              entity_id: automation.turn_off_all_things
+            data:
+              skip_condition: true
+mode: parallel
+```
